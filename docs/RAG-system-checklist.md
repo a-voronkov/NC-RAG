@@ -15,19 +15,19 @@ Global rules (apply to all phases):
 
 Do
 
-- [ ] Deploy Nextcloud + PostgreSQL (Docker Compose) with persistent volumes.
-- [ ] Create admin user; verify upload/download; enable cron/background jobs.
+- [x] Deploy Nextcloud + PostgreSQL (Docker Compose) with persistent volumes.
+- [x] Create admin user; verify upload/download; enable cron/background jobs.
 - [ ] Headless test: login → upload small file → download → assert contents.
 
 What NOT to do
 
-- [ ] Don’t run without volumes (data loss on restart).
-- [ ] Don’t expose DB publicly; don’t reuse weak/default passwords.
-- [ ] Don’t continue if uploads fail or cron is not active.
+- [x] Don’t run without volumes (data loss on restart).
+- [x] Don’t expose DB publicly; don’t reuse weak/default passwords.
+- [x] Don’t continue if uploads fail or cron is not active.
 
 Gate
 
-- [ ] Upload/share/download work via UI. Logs show no startup errors.
+- [x] Upload/share/download work via UI. Logs show no startup errors.
 
 ---
 

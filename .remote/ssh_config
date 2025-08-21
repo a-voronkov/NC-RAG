@@ -1,0 +1,4 @@
+Host ncrag
+  HostName 143.198.192.141
+  User root
+  Port 22
