@@ -49,7 +49,7 @@ services:
       - backend
 
   nextcloud:
-    image: nextcloud:28-apache
+    image: nextcloud:31-apache
     container_name: nextcloud
     depends_on:
       - db
@@ -78,7 +78,7 @@ services:
       - backend
 
   nextcloud-cron:
-    image: nextcloud:28-apache
+    image: nextcloud:31-apache
     container_name: nextcloud-cron
     restart: unless-stopped
     depends_on:
