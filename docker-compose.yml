@@ -15,6 +15,12 @@ services:
       - --certificatesresolvers.le.acme.storage=/letsencrypt/acme.json
       - --certificatesresolvers.le.acme.httpchallenge=true
       - --certificatesresolvers.le.acme.httpchallenge.entrypoint=web
+      - --api.dashboard=true
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.middlewares.hsts.headers.stsSeconds=31536000"
+      - "traefik.http.middlewares.hsts.headers.stsIncludeSubdomains=true"
+      - "traefik.http.middlewares.hsts.headers.stsPreload=true"
     ports:
       - "80:80"
       - "443:443"
@@ -50,6 +56,7 @@ services:
       NEXTCLOUD_TRUSTED_DOMAINS: ${NEXTCLOUD_TRUSTED_DOMAINS:-ncrag.voronkov.club}
     labels:
       - "traefik.enable=true"
+      - "traefik.http.routers.nextcloud.middlewares=hsts"
       - "traefik.http.routers.nextcloud.rule=Host(`${NEXTCLOUD_DOMAIN:-ncrag.voronkov.club}`)"
       - "traefik.http.routers.nextcloud.entrypoints=websecure"
       - "traefik.http.routers.nextcloud.tls.certresolver=le"
