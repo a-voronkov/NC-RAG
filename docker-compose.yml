@@ -7,6 +7,7 @@ services:
     command:
       - --providers.docker=true
       - --providers.docker.exposedbydefault=false
+      - --providers.docker.network=nc-rag_backend
       - --entrypoints.web.address=:80
       - --entrypoints.websecure.address=:443
       - --entrypoints.web.http.redirections.entryPoint.to=websecure
@@ -17,6 +18,7 @@ services:
       - --certificatesresolvers.le.acme.httpchallenge.entrypoint=web
       - --api.dashboard=true
       - --accesslog=true
+      - --accesslog.filepath=/var/log/traefik/access.log
       - --log.level=DEBUG
     labels:
       - "traefik.enable=true"
@@ -30,6 +32,9 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - traefik_letsencrypt:/letsencrypt
     restart: unless-stopped
+    networks:
+      - web
+      - backend
   db:
     image: postgres:15
     container_name: nc-db
@@ -40,6 +45,8 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-nextcloudpass}
     volumes:
       - db_data:/var/lib/postgresql/data
+    networks:
+      - backend
 
   nextcloud:
     image: nextcloud:28-apache
@@ -63,9 +70,12 @@ services:
       - "traefik.http.routers.nextcloud.entrypoints=websecure"
       - "traefik.http.routers.nextcloud.tls.certresolver=le"
       - "traefik.http.routers.nextcloud.priority=100"
+      - "traefik.docker.network=nc-rag_backend"
       - "traefik.http.services.nextcloud.loadbalancer.server.port=80"
     volumes:
       - nextcloud_data:/var/www/html
+    networks:
+      - backend
 
   nextcloud-cron:
     image: nextcloud:28-apache
@@ -82,16 +92,19 @@ services:
     entrypoint: /cron.sh
     volumes:
       - nextcloud_data:/var/www/html
+    networks:
+      - backend
 
   mock-parser:
     build:
       context: ./services/mock-parser
     container_name: mock-parser
-    ports:
-      - "8080:8080"
+    # internal only; exposed via backend network
     environment:
       - UVICORN_WORKERS=1
     restart: unless-stopped
+    networks:
+      - backend
 
   node-red:
     image: nodered/node-red:3.1
@@ -112,11 +125,18 @@ services:
       - "traefik.http.routers.nodered.priority=1000"
       - "traefik.http.routers.nodered.tls.certresolver=le"
       - "traefik.http.services.nodered.loadbalancer.server.port=1880"
+      - "traefik.docker.network=nc-rag_backend"
     restart: unless-stopped
+    networks:
+      - backend
 
 volumes:
   nextcloud_data:
   db_data:
   traefik_letsencrypt:
   node_red_data:
+
+networks:
+  web:
+  backend:
 
