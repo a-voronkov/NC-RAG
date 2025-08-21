@@ -1,0 +1,32 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Normalized Nextcloud Event",
+  "type": "object",
+  "required": ["trace_id", "event_id", "type", "tenant"],
+  "properties": {
+    "trace_id": { "type": "string" },
+    "event_id": { "type": "string" },
+    "type": { "type": "string" },
+    "tenant": { "type": "string" },
+    "file": {
+      "type": "object",
+      "properties": {
+        "file_id": { "type": "string" },
+        "path": { "type": "string" },
+        "mtime": { "type": "integer" },
+        "owner_uid": { "type": "string" }
+      },
+      "additionalProperties": true
+    },
+    "share": {
+      "type": "object",
+      "properties": {
+        "scope": { "type": "string" },
+        "id": { "type": "string" },
+        "principal": { "type": "string" }
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": false
+}

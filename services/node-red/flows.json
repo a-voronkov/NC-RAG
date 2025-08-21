@@ -1,0 +1,8 @@
+[
+  { "id": "flow1", "type": "tab", "label": "Nextcloud Webhooks", "disabled": false, "info": "" },
+  { "id": "http_in_1", "type": "http in", "z": "flow1", "name": "POST /webhooks/nextcloud", "url": "/webhooks/nextcloud", "method": "post", "upload": false, "swaggerDoc": "", "x": 180, "y": 140, "wires": [["json_1"]] },
+  { "id": "json_1", "type": "json", "z": "flow1", "name": "Parse JSON", "property": "payload", "action": "obj", "pretty": false, "x": 400, "y": 140, "wires": [["fn_norm"]] },
+  { "id": "fn_norm", "type": "function", "z": "flow1", "name": "Normalize & split", "func": "const evt = msg.payload || {};\nconst now = new Date().toISOString();\nconst norm = {trace_id: evt.trace_id || now, type: evt.type || 'unknown', tenant: evt.tenant || (env.get('TENANT_DEFAULT')||'default'), file: evt.file||{}, received_at: now};\nconst logMsg = { payload: JSON.stringify(norm) };\nconst respMsg = { payload: { ok: true } };\nreturn [logMsg, respMsg];", "outputs": 2, "noerr": 0, "x": 640, "y": 140, "wires": [["file_1"],["http_resp_1"]] },
+  { "id": "file_1", "type": "file", "z": "flow1", "name": "/data/webhook-log.jsonl", "filename": "/data/webhook-log.jsonl", "appendNewline": true, "createDir": true, "overwriteFile": "false", "encoding": "none", "x": 930, "y": 120, "wires": [] },
+  { "id": "http_resp_1", "type": "http response", "z": "flow1", "name": "200 JSON", "statusCode": "200", "headers": {"Content-Type":"application/json"}, "x": 930, "y": 180, "wires": [] }
+]
