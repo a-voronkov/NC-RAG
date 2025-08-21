@@ -1,0 +1,13 @@
+version: "3.9"
+
+services:
+  mock-parser:
+    build:
+      context: ./services/mock-parser
+    container_name: mock-parser
+    ports:
+      - "8080:8080"
+    environment:
+      - UVICORN_WORKERS=1
+    restart: unless-stopped
+

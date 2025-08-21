@@ -4,16 +4,10 @@
 
 - POST `${PARSER_URL}/parser/jobs`
 - Headers: `Authorization: Bearer <token>` (if applicable)
-- Body:
-
-```json
-{
-  "trace_id": "<uuid>",
-  "filename": "foo.pdf",
-  "content_base64": "...",
-  "options": { "language": "auto" }
-}
-```
+- Content-Type: `multipart/form-data`
+- Form fields:
+  - `file`: uploaded file content
+  - `trace_id` (optional): client-provided trace identifier
 
 ### Response
 
@@ -36,9 +30,13 @@
 ```json
 {
   "job_id": "<uuid>",
-  "chunks": [ { "chunk_id": "c1", "text": "...", "page": 1 } ],
-  "qa": [ { "q": "...", "a": "..." } ],
-  "parser_version": "v1.2.3"
+  "trace_id": "<uuid>",
+  "status": "succeeded",
+  "parser_version": "mock-1.0.0",
+  "filename": "foo.pdf",
+  "paragraphs": ["...", "..."],
+  "raw_blocks_b64": ["..."],
+  "qa": [ { "q": "...", "a": "...", "paragraph_index": 1 } ]
 }
 ```
 
