@@ -1,0 +1,35 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Qdrant Point Payload",
+  "type": "object",
+  "required": ["id", "payload"],
+  "properties": {
+    "id": { "type": ["string", "integer"] },
+    "vector": {
+      "type": ["array", "object"],
+      "items": { "type": "number" }
+    },
+    "payload": {
+      "type": "object",
+      "required": ["type", "tenant", "file_id", "owner_uid", "principals"],
+      "properties": {
+        "type": { "type": "string", "enum": ["chunk", "qa"] },
+        "tenant": { "type": "string" },
+        "file_id": { "type": "string" },
+        "owner_uid": { "type": "string" },
+        "principals": { "type": "array", "items": { "type": "string" } },
+        "path": { "type": "string" },
+        "mtime": { "type": ["integer", "string"] },
+        "embed_model": { "type": "string" },
+        "parser_version": { "type": "string" },
+        "chunk_id": { "type": "string" },
+        "text": { "type": "string" },
+        "page": { "type": "integer" },
+        "q": { "type": "string" },
+        "a": { "type": "string" }
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": false
+}
