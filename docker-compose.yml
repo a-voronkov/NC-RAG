@@ -16,6 +16,8 @@ services:
       - --certificatesresolvers.le.acme.httpchallenge=true
       - --certificatesresolvers.le.acme.httpchallenge.entrypoint=web
       - --api.dashboard=true
+      - --accesslog=true
+      - --log.level=DEBUG
     labels:
       - "traefik.enable=true"
       - "traefik.http.middlewares.hsts.headers.stsSeconds=31536000"
