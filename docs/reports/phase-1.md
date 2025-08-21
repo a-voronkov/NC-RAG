@@ -21,7 +21,9 @@
 1. Added compose for `db`, `nextcloud`, `nextcloud-cron` with volumes
 2. Wrote `nextcloud_wait.sh` and `nextcloud_smoke.sh`
 3. Deployed on `ncrag.voronkov.club` at `/srv/docker/nc-rag`
-4. Ran wait + smoke; success
+4. Added Traefik with Let's Encrypt, HTTP→HTTPS redirect, routed Nextcloud by host
+5. Set Nextcloud trusted_domains and overwrite host/protocol to `https://ncrag.voronkov.club`
+6. Ran wait + smoke; success
 
 ## Evidence
 
