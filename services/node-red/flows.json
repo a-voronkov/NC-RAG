@@ -1,0 +1,6 @@
+[
+  { "id": "flow1", "type": "tab", "label": "Nextcloud Webhooks", "disabled": false, "info": "" },
+  { "id": "http_in_1", "type": "http in", "z": "flow1", "name": "POST /webhooks/nextcloud", "url": "/webhooks/nextcloud", "method": "post", "upload": false, "swaggerDoc": "", "x": 210, "y": 140, "wires": [["fn_ok"]] },
+  { "id": "fn_ok", "type": "function", "z": "flow1", "name": "Return OK", "func": "// echo minimal response\nreturn { payload: { ok: true } };", "outputs": 1, "noerr": 0, "x": 470, "y": 140, "wires": [["http_resp_1"]] },
+  { "id": "http_resp_1", "type": "http response", "z": "flow1", "name": "200 JSON", "statusCode": "200", "headers": {"Content-Type":"application/json"}, "x": 700, "y": 140, "wires": [] }
+]
