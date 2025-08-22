@@ -2,7 +2,7 @@ version: "3.9"
 
 services:
   traefik:
-    image: traefik:v3.1
+    image: traefik:v3.5
     container_name: traefik
     command:
       - --providers.docker=true
@@ -107,12 +107,13 @@ services:
       - backend
 
   node-red:
-    image: nodered/node-red:3.1
+    image: nodered/node-red:4.1
     container_name: node-red
     environment:
       - TZ=UTC
       - NODE_RED_ENABLE_SAFE_MODE=false
       - TENANT_DEFAULT=${TENANT_DEFAULT:-default}
+      - WEBHOOK_SECRET=${WEBHOOK_SECRET:-change-me}
     volumes:
       - ./services/node-red/flows.json:/data/flows.json
       - node_red_data:/data

@@ -6,7 +6,7 @@
 
 ## Auth
 
-- Shared secret header (recommended) or IP allow-list via reverse proxy
+- Shared secret header `X-Webhook-Secret` (recommended) or IP allow-list via reverse proxy
 
 ## Delivery Semantics
 
@@ -33,4 +33,11 @@
   }
 }
 ```
+
+## Nextcloud Setup
+
+- Install and enable WebhookListeners app.
+- Add endpoint URL: `https://<domain>/webhooks/nextcloud`.
+- Add header: `X-Webhook-Secret: <value>` matching `WEBHOOK_SECRET`.
+- Select events: node created/updated/deleted, share created/deleted.
 
