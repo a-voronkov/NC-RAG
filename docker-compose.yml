@@ -67,9 +67,7 @@ services:
       - backend
 
   nextcloud:
-    build:
-      context: ./services/nextcloud
-    image: nc-custom-nextcloud:31-apache
+    image: nextcloud:31-apache
     container_name: nextcloud
     depends_on:
       - db
@@ -85,7 +83,7 @@ services:
       NEXTCLOUD_ADMIN_USER: ${NEXTCLOUD_ADMIN_USER:-admin}
       NEXTCLOUD_ADMIN_PASSWORD: ${NEXTCLOUD_ADMIN_PASSWORD:-adminpass}
       NEXTCLOUD_TRUSTED_DOMAINS: ${NEXTCLOUD_TRUSTED_DOMAINS:-ncrag.voronkov.club}
-      # Memcache config (read by config.php or occ later)
+      # Memcache config (used by occ below)
       REDIS_HOST: redis
       REDIS_HOST_PORT: 6379
       REDIS_HOST_PASSWORD: ""
@@ -106,7 +104,7 @@ services:
       - backend
 
   nextcloud-cron:
-    image: nc-custom-nextcloud:31-apache
+    image: nextcloud:31-apache
     container_name: nextcloud-cron
     restart: unless-stopped
     depends_on:
