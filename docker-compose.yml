@@ -34,7 +34,7 @@ services:
       - web
       - backend
   db:
-    image: postgres:15
+    image: postgres:17
     container_name: nc-db
     restart: unless-stopped
     environment:
