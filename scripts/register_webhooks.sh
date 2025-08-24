@@ -4,7 +4,9 @@ BASE="https://${NC_DOMAIN}/ocs/v2.php/apps/webhook_listeners/api/v1/webhooks"
 AUTH="${NC_ADMIN_USER}:${NC_ADMIN_PASS}"
 HDR1="OCS-APIRequest: true"
 HDR2="Accept: application/json"
-uri="https://${NC_DOMAIN}/webhooks/nextcloud"
+
+# ИСПРАВЛЕННЫЙ ПУТЬ: /nodered/webhooks/nextcloud
+uri="https://${NC_DOMAIN}/nodered/webhooks/nextcloud"
 post_evt() {
   evt="$1"
   curl -sk -u "$AUTH" -H "$HDR1" -H "$HDR2" -X POST "$BASE" \
