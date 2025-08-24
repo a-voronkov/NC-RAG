@@ -35,9 +35,9 @@ Gate
 
 Do
 
-- [ ] Enable WebhookListeners (and Flow if needed for share events).
-- [ ] Register HTTPS endpoint(s): POST `/webhooks/nextcloud`.
-- [ ] In Node-RED, parse payload → normalize JSON for queueing.
+- [x] Enable WebhookListeners (and Flow if needed for share events).
+- [x] Register HTTPS endpoint(s): POST `/webhooks/nextcloud`.
+- [x] In Node-RED, parse payload → normalize JSON for queueing.
 
 What NOT to do
 
@@ -47,11 +47,11 @@ What NOT to do
 
 Verify
 
-- [ ] Simulate upload/delete/share; see Node-RED receive events quickly.
+- [x] Simulate upload/delete/share; see Node-RED receive events quickly.
 
 Gate
 
-- [ ] All required event types are received and logged within ~60s.
+- [x] All required event types are received and logged within ~60s.
 
 ---
 
