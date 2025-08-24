@@ -202,6 +202,60 @@ services:
     networks:
       - backend
 
+  # Redis for job state management
+  redis:
+    image: redis:7-alpine
+    container_name: nc-redis
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+    networks:
+      - backend
+
+  # Go Worker for file processing
+  worker:
+    build: ./services/worker
+    container_name: nc-worker
+    environment:
+      - RABBITMQ_URL=amqp://ncrag-app:${RABBITMQ_APP_PASS}@rabbitmq:5672/ncrag
+      - RABBITMQ_QUEUE=events.files
+      - NEXTCLOUD_URL=https://${NEXTCLOUD_DOMAIN:-ncrag.voronkov.club}
+      - NEXTCLOUD_USER=${NEXTCLOUD_ADMIN_USER:-admin}
+      - NEXTCLOUD_PASS=${NEXTCLOUD_ADMIN_PASSWORD}
+      - PARSER_URL=${PARSER_URL:-https://api.example.com/parser}
+      - PARSER_SECRET=${PARSER_SECRET:-}
+      - REDIS_URL=redis://redis:6379/0
+      - WORKER_CONCURRENCY=${WORKER_CONCURRENCY:-2}
+      - WORKER_PREFETCH=${WORKER_PREFETCH:-1}
+    depends_on:
+      - rabbitmq
+      - redis
+      - nextcloud
+    restart: unless-stopped
+    networks:
+      - backend
+
+  # Mock parser service for testing (Phase 4 development)
+  mock-parser:
+    image: nginx:alpine
+    container_name: nc-mock-parser
+    volumes:
+      - ./services/mock-parser/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./services/mock-parser/html:/usr/share/nginx/html:ro
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.parser.rule=Host(`${NEXTCLOUD_DOMAIN:-ncrag.voronkov.club}`) && PathPrefix(`/webhooks/parser`)"
+      - "traefik.http.routers.parser.entrypoints=websecure"
+      - "traefik.http.routers.parser.tls.certresolver=le"
+      - "traefik.http.routers.parser.priority=800"
+      - "traefik.http.middlewares.parser-strip.stripprefix.prefixes=/webhooks/parser"
+      - "traefik.http.routers.parser.middlewares=parser-strip"
+      - "traefik.http.services.parser.loadbalancer.server.port=80"
+      - "traefik.docker.network=nc-rag_backend"
+    restart: unless-stopped
+    networks:
+      - backend
+
   nc-webhook-seeder:
     image: curlimages/curl:8.10.1
     container_name: nc-webhook-seeder
@@ -226,6 +280,7 @@ volumes:
   traefik_letsencrypt:
   node_red_data:
   rabbitmq_data:
+  redis_data:
 
 networks:
   web:

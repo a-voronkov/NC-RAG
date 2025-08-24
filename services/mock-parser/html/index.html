@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Mock Parser Service</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        .endpoint { background: #f5f5f5; padding: 10px; margin: 10px 0; border-radius: 5px; }
+        .method { font-weight: bold; color: #007acc; }
+    </style>
+</head>
+<body>
+    <h1>Mock Parser Service</h1>
+    <p>This is a mock parser service for testing Phase 4 of the NC-RAG system.</p>
+    
+    <h2>Available Endpoints:</h2>
+    
+    <div class="endpoint">
+        <span class="method">GET</span> /health
+        <p>Health check endpoint</p>
+    </div>
+    
+    <div class="endpoint">
+        <span class="method">POST</span> /jobs
+        <p>Submit a file for parsing</p>
+    </div>
+    
+    <div class="endpoint">
+        <span class="method">GET</span> /jobs/{job_id}
+        <p>Get job status</p>
+    </div>
+    
+    <div class="endpoint">
+        <span class="method">GET</span> /jobs/{job_id}/result
+        <p>Get job result (when completed)</p>
+    </div>
+    
+    <h2>Usage:</h2>
+    <p>This mock service simulates the external parser API for development and testing purposes.</p>
+    <p>All jobs are automatically marked as "queued" → "processing" → "completed" with mock data.</p>
+</body>
+</html>
