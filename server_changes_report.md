@@ -1,10 +1,10 @@
-# Отчет о различиях между локальным репозиторием и сервером
+# Server Changes Report: Local Repository vs Production Environment
 
-## Обзор
+## Overview
 
-На сервере `ncrag.voronkov.club` в папке `/srv/docker/nc-rag/` были обнаружены изменения, которые необходимо внести в репозиторий для корректного развертывания в будущем.
+Changes were discovered on the server `ncrag.voronkov.club` in the `/srv/docker/nc-rag/` directory that need to be incorporated into the repository for correct future deployments.
 
-## Статус Git на сервере
+## Git Status on Server
 
 ```
 On branch main
@@ -21,87 +21,87 @@ Untracked files:
         services/node-red/settings.js
 ```
 
-## Детальные изменения
+## Detailed Changes
 
 ### 1. docker-compose.yml
 
-**Основные изменения:**
+**Main Changes:**
 
-#### Traefik сервис:
-- **Удалены переменные окружения** - заменены на хардкод значения:
+#### Traefik Service:
+- **Environment variables removed** - replaced with hardcoded values:
   - `${LETSENCRYPT_EMAIL:-admin@voronkov.club}` → `admin@voronkov.club`
-- **Изменен уровень логирования**: `DEBUG` → `INFO`
-- **Удалены дополнительные настройки логирования**:
-  - Убрана строка `--accesslog.filepath=/var/log/traefik/access.log`
-- **Удалены HSTS middleware настройки**:
-  - Убраны все labels с `traefik.http.middlewares.hsts.*`
-- **Изменен формат портов**: `"80:80"` → `80:80` (убраны кавычки)
+- **Log level changed**: `DEBUG` → `INFO`
+- **Additional logging settings removed**:
+  - Removed line `--accesslog.filepath=/var/log/traefik/access.log`
+- **HSTS middleware settings removed**:
+  - Removed all labels with `traefik.http.middlewares.hsts.*`
+- **Port format changed**: `"80:80"` → `80:80` (quotes removed)
 
-#### База данных (db):
-- **Удалены переменные окружения** - заменены на хардкод:
+#### Database (db):
+- **Environment variables removed** - replaced with hardcoded values:
   - `${POSTGRES_DB:-nextcloud}` → `nextcloud`
   - `${POSTGRES_USER:-nextcloud}` → `nextcloud`  
   - `${POSTGRES_PASSWORD:-nextcloudpass}` → `nextcloudpass`
 
 #### Redis:
-- **Изменен формат команды**: `["redis-server", "--appendonly", "no"]` → `redis-server --appendonly no`
+- **Command format changed**: `["redis-server", "--appendonly", "no"]` → `redis-server --appendonly no`
 
 #### Memcached:
-- **Удалена настройка памяти**: убрана `command: ["-m", "128"]`
+- **Memory setting removed**: removed `command: ["-m", "128"]`
 
 #### Nextcloud:
-- **Понижена версия образа**: `nextcloud:31-apache` → `nextcloud:30-apache`
-- **Удалена зависимость от traefik** в `depends_on`
-- **Удалены переменные окружения** - заменены на хардкод:
-  - Все `${POSTGRES_*}` переменные
+- **Image version downgraded**: `nextcloud:31-apache` → `nextcloud:30-apache`
+- **Traefik dependency removed** from `depends_on`
+- **Environment variables removed** - replaced with hardcoded values:
+  - All `${POSTGRES_*}` variables
   - `${NEXTCLOUD_ADMIN_USER:-admin}` → `admin`
-  - `${NEXTCLOUD_ADMIN_PASSWORD:-adminpass}` → `j*yDCX<4ubIj_.w##>lhxDc?` (реальный пароль!)
+  - `${NEXTCLOUD_ADMIN_PASSWORD:-adminpass}` → `j*yDCX<4ubIj_.w##>lhxDc?` (real password!)
   - `${NEXTCLOUD_TRUSTED_DOMAINS:-ncrag.voronkov.club}` → `ncrag.voronkov.club`
-- **Изменены Traefik labels**:
-  - Убран middleware `hsts`
-  - Изменено правило роутинга: `/webhooks/nextcloud` → `/nodered`
-  - Изменен приоритет: `100` → `1`
+- **Traefik labels changed**:
+  - Removed `hsts` middleware
+  - Changed routing rule: `/webhooks/nextcloud` → `/nodered`
+  - Changed priority: `100` → `1`
 
 #### Nextcloud-cron:
-- **Понижена версия образа**: `nextcloud:31-apache` → `nextcloud:30-apache`
-- **Удалены переменные окружения** - заменены на хардкод
+- **Image version downgraded**: `nextcloud:31-apache` → `nextcloud:30-apache`
+- **Environment variables removed** - replaced with hardcoded values
 
 #### Node-RED:
-- **Изменен способ сборки**: `build: context: ./services/node-red` → `image: nodered/node-red:4.1`
-- **Удалены переменные окружения** - заменены на хардкод:
+- **Build method changed**: `build: context: ./services/node-red` → `image: nodered/node-red:4.1`
+- **Environment variables removed** - replaced with hardcoded values:
   - `${TENANT_DEFAULT:-default}` → `default`
   - `${WEBHOOK_SECRET:-change-me}` → `changeme`
-- **Изменены volume mappings**:
-  - Закомментирован: `#- ./services/node-red/flows.json:/data/flows.json`
-  - Добавлен: `- ./services/node-red/settings.js:/data/settings.js`
-- **Кардинально изменены Traefik labels**:
-  - Добавлены два отдельных роутера: `nodered-webhook` и `nodered-ui`
-  - Изменены пути: `/webhooks/nextcloud` → `/nodered/webhooks` и `/nodered`
-  - Разные приоритеты: 1000 и 900
+- **Volume mappings changed**:
+  - Commented out: `#- ./services/node-red/flows.json:/data/flows.json`
+  - Added: `- ./services/node-red/settings.js:/data/settings.js`
+- **Traefik labels completely redesigned**:
+  - Added two separate routers: `nodered-webhook` and `nodered-ui`
+  - Changed paths: `/webhooks/nextcloud` → `/nodered/webhooks` and `/nodered`
+  - Different priorities: 1000 and 900
 
-#### Удален сервис nc-webhook-seeder:
-- Полностью удален сервис `nc-webhook-seeder` из конца файла
+#### Removed nc-webhook-seeder service:
+- Completely removed `nc-webhook-seeder` service from the end of the file
 
 ### 2. scripts/register_webhooks.sh
 
-**Основные изменения:**
+**Main Changes:**
 
-#### Исправление пути webhook:
-- **Старый путь**: `uri="https://${NC_DOMAIN}/webhooks/nextcloud"`
-- **Новый путь**: `uri="https://${NC_DOMAIN}/nodered/webhooks/nextcloud"`
+#### Webhook path correction:
+- **Old path**: `uri="https://${NC_DOMAIN}/webhooks/nextcloud"`
+- **New path**: `uri="https://${NC_DOMAIN}/nodered/webhooks/nextcloud"`
 
-#### Улучшения в логике:
-- **Убрана идемпотентность**: удалена проверка существующих webhooks
-- **Добавлены русские комментарии и эмодзи** для лучшей читаемости
-- **Упрощена логика**: теперь всегда регистрирует события без проверки
+#### Logic improvements:
+- **Idempotency removed**: removed check for existing webhooks
+- **Added informative comments and emojis** for better readability
+- **Simplified logic**: now always registers events without checking
 
-#### Улучшенный вывод:
-- Добавлены информативные сообщения о процессе регистрации
-- Более понятный финальный вывод
+#### Enhanced output:
+- Added informative messages about the registration process
+- More understandable final output
 
-### 3. Новый файл: services/node-red/settings.js
+### 3. New file: services/node-red/settings.js
 
-**Полностью новый файл** с настройками Node-RED:
+**Completely new file** with Node-RED settings:
 
 ```javascript
 module.exports = {
@@ -125,45 +125,45 @@ module.exports = {
 }
 ```
 
-**Ключевые особенности:**
-- Настройка базового пути `/nodered`
-- Встроенная аутентификация с хешированным паролем
-- Кастомизированный заголовок и URL
+**Key Features:**
+- Base path configuration `/nodered`
+- Built-in authentication with hashed password
+- Customized header and URL
 
-### 4. Отсутствующий файл: .env
+### 4. Missing file: .env
 
-На сервере создан `.env` файл с реальными значениями:
-- Реальные пароли и секреты
-- Конкретные URL и домены
-- Настройки для всех сервисов
+A `.env` file was created on the server with real values:
+- Real passwords and secrets
+- Specific URLs and domains
+- Settings for all services
 
-## Рекомендации по внесению изменений в репозиторий
+## Recommendations for Repository Changes
 
-### Критически важные изменения:
+### Critically Important Changes:
 
-1. **Создать .env.example** с обновленной структурой переменных
-2. **Добавить services/node-red/settings.js** в репозиторий
-3. **Исправить пути в scripts/register_webhooks.sh**
-4. **Обновить docker-compose.yml** с правильной конфигурацией Node-RED
+1. **Create .env.example** with updated variable structure
+2. **Add services/node-red/settings.js** to repository
+3. **Fix paths in scripts/register_webhooks.sh**
+4. **Update docker-compose.yml** with correct Node-RED configuration
 
-### Изменения, требующие осторожности:
+### Changes Requiring Caution:
 
-1. **Версии образов**: решить, использовать ли nextcloud:30 или 31
-2. **Переменные окружения**: вернуть использование переменных вместо хардкода
-3. **Traefik настройки**: восстановить HSTS и другие security headers
-4. **Сервис nc-webhook-seeder**: решить, нужен ли он
+1. **Image versions**: decide whether to use nextcloud:30 or 31
+2. **Environment variables**: restore variable usage instead of hardcoded values
+3. **Traefik settings**: restore HSTS and other security headers
+4. **nc-webhook-seeder service**: decide if it's needed
 
-### Безопасность:
+### Security:
 
-⚠️ **ВНИМАНИЕ**: На сервере используются реальные пароли в открытом виде в docker-compose.yml. Необходимо:
-1. Вернуть использование переменных окружения
-2. Убедиться, что .env файл в .gitignore
-3. Обновить пароли после внесения изменений
+⚠️ **WARNING**: Real passwords are used in plain text in docker-compose.yml on the server. It's necessary to:
+1. Restore environment variable usage
+2. Ensure .env file is in .gitignore
+3. Update passwords after making changes
 
-## Следующие шаги
+## Next Steps
 
-1. Создать .env.example на основе серверного .env
-2. Скопировать settings.js в репозиторий
-3. Обновить docker-compose.yml с правильными путями Node-RED
-4. Исправить register_webhooks.sh
-5. Протестировать развертывание в тестовой среде
+1. Create .env.example based on server .env
+2. Copy settings.js to repository
+3. Update docker-compose.yml with correct Node-RED paths
+4. Fix register_webhooks.sh
+5. Test deployment in staging environment
