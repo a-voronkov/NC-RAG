@@ -59,9 +59,9 @@ Gate
 
 Do
 
-- [ ] Deploy RabbitMQ (`amqp://…`), enable management UI (internal).
-- [ ] Declare queues: `events.files`, `ingest.ready` (or similar).
-- [ ] Wire Node-RED → `events.files`.
+- [x] Deploy RabbitMQ (`amqp://…`), enable management UI (internal).
+- [x] Declare queues: `events.files`, `ingest.ready` (or similar).
+- [x] Wire Node-RED → `events.files`.
 
 What NOT to do
 
@@ -71,11 +71,11 @@ What NOT to do
 
 Verify
 
-- [ ] File upload → message visible in `events.files`.
+- [x] File upload → message visible in `events.files`.
 
 Gate
 
-- [ ] Messages reliably appear for create/update/delete/share.
+- [x] Messages reliably appear for create/update/delete/share.
 
 ---
 
@@ -83,20 +83,20 @@ Gate
 
 Do
 
-- [ ] Run Caddy/Traefik with Let’s Encrypt.
-- [ ] Routes:
+- [x] Run Caddy/Traefik with Let's Encrypt.
+- [x] Routes:
   - `/webhooks/nextcloud` → Node-RED
   - `/webhooks/parser` → worker/receiver
-- [ ] Protect admin UIs (basic auth/IP allow-list).
+- [x] Protect admin UIs (basic auth/IP allow-list).
 
 What NOT to do
 
-- [ ] Don’t accept parser webhooks over HTTP; must be HTTPS.
-- [ ] Don’t expose RabbitMQ UI broadly.
+- [x] Don't accept parser webhooks over HTTP; must be HTTPS.
+- [x] Don't expose RabbitMQ UI broadly.
 
 Gate
 
-- [ ] `curl -I https://<domain>/webhooks/parser` returns expected 200/401; valid TLS.
+- [x] `curl -I https://<domain>/webhooks/parser` returns expected 200/401; valid TLS.
 
 ---
 

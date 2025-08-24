@@ -1,5 +1,10 @@
 FROM nodered/node-red:4.1
 
+# Install AMQP module for RabbitMQ integration
+USER root
+RUN npm install node-red-contrib-amqp
+USER node-red
+
 COPY flows.json /usr/src/node-red/flows_template.json
 
 RUN echo '#!/bin/bash\n\
