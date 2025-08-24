@@ -90,7 +90,7 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.nextcloud.middlewares=hsts"
-      - "traefik.http.routers.nextcloud.rule=Host(`${NEXTCLOUD_DOMAIN:-ncrag.voronkov.club}`) && !PathPrefix(`/webhooks/nextcloud`)"
+      - "traefik.http.routers.nextcloud.rule=Host(`${NEXTCLOUD_DOMAIN:-ncrag.voronkov.club}`) && !PathPrefix(`/nodered`)"
       - "traefik.http.routers.nextcloud.entrypoints=websecure"
       - "traefik.http.routers.nextcloud.tls.certresolver=le"
       - "traefik.http.routers.nextcloud.priority=100"
@@ -138,17 +138,25 @@ services:
       - TZ=UTC
       - NODE_RED_ENABLE_SAFE_MODE=false
       - TENANT_DEFAULT=${TENANT_DEFAULT:-default}
-      - WEBHOOK_SECRET=${WEBHOOK_SECRET:-change-me}
+      - WEBHOOK_SECRET=${WEBHOOK_SECRET:-changeme}
     volumes:
+      - ./services/node-red/settings.js:/data/settings.js
       - node_red_data:/data
     depends_on:
       - traefik
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.nodered.rule=Host(`${NEXTCLOUD_DOMAIN:-ncrag.voronkov.club}`) && PathPrefix(`/webhooks/nextcloud`)"
-      - "traefik.http.routers.nodered.entrypoints=websecure"
-      - "traefik.http.routers.nodered.priority=1000"
-      - "traefik.http.routers.nodered.tls.certresolver=le"
+      # Webhooks WITHOUT authentication (highest priority)
+      - "traefik.http.routers.nodered-webhook.rule=Host(`${NEXTCLOUD_DOMAIN:-ncrag.voronkov.club}`) && PathPrefix(`/nodered/webhooks`)"
+      - "traefik.http.routers.nodered-webhook.entrypoints=websecure"
+      - "traefik.http.routers.nodered-webhook.priority=1000"
+      - "traefik.http.routers.nodered-webhook.tls.certresolver=le"
+      # Node-RED UI WITHOUT Traefik auth (internal Node-RED auth)
+      - "traefik.http.routers.nodered-ui.rule=Host(`${NEXTCLOUD_DOMAIN:-ncrag.voronkov.club}`) && PathPrefix(`/nodered`)"
+      - "traefik.http.routers.nodered-ui.entrypoints=websecure"
+      - "traefik.http.routers.nodered-ui.priority=900"
+      - "traefik.http.routers.nodered-ui.tls.certresolver=le"
+      # Single service for both routers
       - "traefik.http.services.nodered.loadbalancer.server.port=1880"
       - "traefik.docker.network=nc-rag_backend"
     restart: unless-stopped
