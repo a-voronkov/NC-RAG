@@ -130,6 +130,17 @@ services:
     networks:
       - backend
 
+  # Init-контейнер для инициализации flows.json
+  node-red-init:
+    image: alpine:3.19
+    container_name: node-red-init
+    volumes:
+      - ./services/node-red/flows.json:/init/flows.json:ro
+      - ./services/node-red/init-flows.sh:/init-flows.sh:ro
+      - node_red_data:/data
+    command: ["/init-flows.sh"]
+    restart: "no"
+
   node-red:
     image: nodered/node-red:4.1
     container_name: node-red
@@ -139,10 +150,10 @@ services:
       - TENANT_DEFAULT=${TENANT_DEFAULT:-default}
       - WEBHOOK_SECRET=${WEBHOOK_SECRET:-change-me}
     volumes:
-      - ./services/node-red/flows.json:/data/flows.json
       - node_red_data:/data
     depends_on:
       - traefik
+      - node-red-init
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.nodered.rule=Host(`${NEXTCLOUD_DOMAIN:-ncrag.voronkov.club}`) && PathPrefix(`/webhooks/nextcloud`)"
