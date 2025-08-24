@@ -126,6 +126,18 @@ services:
     # internal only; exposed via backend network
     environment:
       - UVICORN_WORKERS=1
+    labels:
+      - "traefik.enable=true"
+      # Parser webhook endpoint
+      - "traefik.http.routers.parser-webhook.rule=Host(`${NEXTCLOUD_DOMAIN:-ncrag.voronkov.club}`) && PathPrefix(`/webhooks/parser`)"
+      - "traefik.http.routers.parser-webhook.entrypoints=websecure"
+      - "traefik.http.routers.parser-webhook.tls.certresolver=le"
+      - "traefik.http.routers.parser-webhook.priority=800"
+      # Strip /webhooks/parser prefix and route to /
+      - "traefik.http.routers.parser-webhook.middlewares=parser-strip"
+      - "traefik.http.middlewares.parser-strip.stripprefix.prefixes=/webhooks/parser"
+      - "traefik.http.services.parser.loadbalancer.server.port=8000"
+      - "traefik.docker.network=nc-rag_backend"
     restart: unless-stopped
     networks:
       - backend
@@ -163,15 +175,32 @@ services:
     networks:
       - backend
 
-volumes:
-  nextcloud_data:
-  db_data:
-  traefik_letsencrypt:
-  node_red_data:
-
-networks:
-  web:
-  backend:
+  rabbitmq:
+    image: rabbitmq:3.13-management-alpine
+    container_name: nc-rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER:-ncrag}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD:-ncragpass}
+      RABBITMQ_DEFAULT_VHOST: ${RABBITMQ_VHOST:-ncrag}
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+      - ./scripts/rabbitmq-init.sh:/docker-entrypoint-initdb.d/init.sh:ro
+    labels:
+      - "traefik.enable=true"
+      # Management UI with basic auth protection
+      - "traefik.http.routers.rabbitmq-mgmt.rule=Host(`${NEXTCLOUD_DOMAIN:-ncrag.voronkov.club}`) && PathPrefix(`/rabbitmq`)"
+      - "traefik.http.routers.rabbitmq-mgmt.entrypoints=websecure"
+      - "traefik.http.routers.rabbitmq-mgmt.tls.certresolver=le"
+      - "traefik.http.routers.rabbitmq-mgmt.middlewares=rabbitmq-auth,rabbitmq-strip"
+      # Basic auth middleware
+      - "traefik.http.middlewares.rabbitmq-auth.basicauth.users=${RABBITMQ_MGMT_AUTH:-admin:$$2y$$10$$rO7VlFuBXF.LQPDPfOn2LOntQgUQvNX2nHsIhOiwtwe9urLhf5vTa}"
+      # Strip /rabbitmq prefix
+      - "traefik.http.middlewares.rabbitmq-strip.stripprefix.prefixes=/rabbitmq"
+      - "traefik.http.services.rabbitmq.loadbalancer.server.port=15672"
+      - "traefik.docker.network=nc-rag_backend"
+    restart: unless-stopped
+    networks:
+      - backend
 
   nc-webhook-seeder:
     image: curlimages/curl:8.10.1
@@ -190,3 +219,14 @@ networks:
     restart: "no"
     networks:
       - backend
+
+volumes:
+  nextcloud_data:
+  db_data:
+  traefik_letsencrypt:
+  node_red_data:
+  rabbitmq_data:
+
+networks:
+  web:
+  backend:
