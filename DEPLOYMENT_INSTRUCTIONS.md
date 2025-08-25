@@ -61,6 +61,11 @@ PARSER_SECRET=secure-parser-secret
 # Worker settings (optional, defaults are fine)
 WORKER_CONCURRENCY=2
 WORKER_PREFETCH=1
+
+# Talk bot (optional but recommended)
+NEXTCLOUD_BOT_USER=bot
+NEXTCLOUD_BOT_PASSWORD=<secure-password>
+NEXTCLOUD_BOT_DISPLAY_NAME=Service Bot
 ```
 
 ## Verification Steps

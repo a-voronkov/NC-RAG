@@ -42,3 +42,9 @@ docker compose build nextcloud nextcloud-cron
 docker compose up -d --remove-orphans
 ```
 
+### Verify Talk and bot user
+
+```bash
+docker compose exec nextcloud bash -lc "php occ app:list | grep spreed || true"
+docker compose exec nextcloud bash -lc "php occ user:info ${NEXTCLOUD_BOT_USER:-bot} || true"
+```

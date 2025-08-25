@@ -21,7 +21,7 @@ post_evt() {
 
 echo "🔄 Registering webhooks with correct path: $uri"
 
-# Register events
+# Register Files and Share events
 for E in \
   "OCP\\Files\\Events\\Node\\NodeCreatedEvent" \
   "OCP\\Files\\Events\\Node\\NodeUpdatedEvent" \
@@ -29,6 +29,15 @@ for E in \
   "OCP\\Share\\Events\\ShareCreatedEvent" \
   "OCP\\Share\\Events\\ShareDeletedEvent"; do
   echo "📝 Registering: $E"
+  post_evt "$E" || true
+done
+
+# Attempt to register Talk events (best-effort; class names may vary by version)
+for E in \
+  "OCA\\Talk\\Events\\MessageSentEvent" \
+  "OCA\\Talk\\Events\\ConversationCreatedEvent" \
+  "OCA\\Talk\\Events\\ParticipantAddedEvent"; do
+  echo "📝 Registering (Talk): $E"
   post_evt "$E" || true
 done
 
