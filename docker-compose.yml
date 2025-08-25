@@ -65,7 +65,9 @@ services:
       - backend
 
   nextcloud:
-    image: nextcloud:31-apache
+    build:
+      context: ./services/nextcloud
+    image: ncrag-nextcloud:31-apache
     container_name: nextcloud
     depends_on:
       - db
@@ -87,6 +89,10 @@ services:
       REDIS_HOST_PASSWORD: ""
       MEMCACHED_HOST: memcached
       MEMCACHED_PORT: 11211
+      # Bot user (for Talk). Set secure password in production.
+      NEXTCLOUD_BOT_USER: ${NEXTCLOUD_BOT_USER:-bot}
+      NEXTCLOUD_BOT_PASSWORD: ${NEXTCLOUD_BOT_PASSWORD:-}
+      NEXTCLOUD_BOT_DISPLAY_NAME: ${NEXTCLOUD_BOT_DISPLAY_NAME:-Service Bot}
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.nextcloud.middlewares=hsts"
@@ -102,7 +108,7 @@ services:
       - backend
 
   nextcloud-cron:
-    image: nextcloud:31-apache
+    image: ncrag-nextcloud:31-apache
     container_name: nextcloud-cron
     restart: unless-stopped
     depends_on:
