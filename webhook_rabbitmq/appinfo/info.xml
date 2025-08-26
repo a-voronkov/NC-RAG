@@ -18,6 +18,9 @@
   <settings>
     <admin>OCA\WebhookRabbitMQ\Settings\Admin</admin>
   </settings>
+  <controllers>
+    <controller>OCA\WebhookRabbitMQ\Controller\SettingsController</controller>
+  </controllers>
   <bootstrap>OCA\WebhookRabbitMQ\AppInfo\Application</bootstrap>
 </info>
 
