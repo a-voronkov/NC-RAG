@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<info xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://apps.nextcloud.com/schema/apps/info.xsd">
+  <id>webhook_rabbitmq</id>
+  <name>Webhook RabbitMQ</name>
+  <summary>Publish Nextcloud events to RabbitMQ</summary>
+  <description>Publishes all Nextcloud events to a RabbitMQ exchange using background jobs.</description>
+  <version>0.1.0</version>
+  <licence>agpl</licence>
+  <author>Webhook RabbitMQ Authors</author>
+  <namespace>WebhookRabbitMQ</namespace>
+  <category>integration</category>
+  <website>https://example.com</website>
+  <bugs>https://example.com/issues</bugs>
+  <dependencies>
+    <php min-version="8.1"/>
+    <nextcloud min-version="30" max-version="30"/>
+  </dependencies>
+  <settings>
+    <admin>OCA\WebhookRabbitMQ\Settings\Admin</admin>
+  </settings>
+  <bootstrap>OCA\WebhookRabbitMQ\AppInfo\Application</bootstrap>
+</info>
+
