@@ -30,7 +30,10 @@ class Admin implements ISettings {
             'exchange_type' => $this->config->getAppValue(Application::APP_ID, 'exchange_type', 'topic'),
             'routing_prefix' => $this->config->getAppValue(Application::APP_ID, 'routing_prefix', 'nextcloud'),
         ];
-        return new TemplateResponse(Application::APP_ID, 'admin', $params);
+        $response = new TemplateResponse(Application::APP_ID, 'admin', $params);
+        // Load external JS to satisfy CSP
+        \OCP\Util::addScript(Application::APP_ID, 'admin');
+        return $response;
     }
 
     public function getSection(): string {

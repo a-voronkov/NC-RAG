@@ -40,47 +40,5 @@
     <button type="button" id="wr-save">Save</button>
   </form>
 </div>
-<script>
-  (function() {
-    function save(key, value) {
-      const body = new URLSearchParams();
-      body.set('key', key);
-      body.set('value', value);
-      return fetch(OC.generateUrl('/apps/webhook_rabbitmq/settings/save'), {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          'requesttoken': OC.requestToken
-        },
-        body: body.toString(),
-        credentials: 'same-origin'
-      }).then(r => r.json());
-    }
-    document.getElementById('wr-save').addEventListener('click', function() {
-      const enabled = document.getElementById('wr-enabled').checked ? '1' : '0';
-      const host = document.getElementById('wr-host').value;
-      const port = document.getElementById('wr-port').value;
-      const user = document.getElementById('wr-user').value;
-      const pass = document.getElementById('wr-pass').value;
-      const vhost = document.getElementById('wr-vhost').value;
-      const exchange = document.getElementById('wr-exchange').value;
-      const exchangeType = document.getElementById('wr-exchange-type').value;
-      const routingPrefix = document.getElementById('wr-routing-prefix').value;
-      const updates = [
-        ['enabled', enabled],
-        ['host', host],
-        ['port', port],
-        ['user', user],
-        ['pass', pass],
-        ['vhost', vhost],
-        ['exchange', exchange],
-        ['exchange_type', exchangeType],
-        ['routing_prefix', routingPrefix],
-      ];
-      Promise.all(updates.map(([k,v]) => save(k,v)))
-        .then(() => OC.Notification.show('Webhook RabbitMQ settings saved'))
-        .catch(() => OC.Notification.show('Failed to save settings'));
-    });
-  })();
-</script>
+<!-- JS moved to js/admin.js to comply with CSP -->
 

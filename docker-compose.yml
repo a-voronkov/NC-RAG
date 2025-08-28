@@ -46,14 +46,6 @@ services:
     networks:
       - backend
 
-  # Redis cache for Nextcloud
-  redis:
-    image: redis:7-alpine
-    container_name: nc-redis
-    command: ["redis-server", "--appendonly", "no"]
-    restart: unless-stopped
-    networks:
-      - backend
 
   # Memcached for Nextcloud (local cache)
   memcached:
@@ -84,13 +76,12 @@ services:
       # Memcache config (used by occ below)
       REDIS_HOST: redis
       REDIS_HOST_PORT: 6379
-      REDIS_HOST_PASSWORD: ""
       MEMCACHED_HOST: memcached
       MEMCACHED_PORT: 11211
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.nextcloud.middlewares=hsts"
-      - "traefik.http.routers.nextcloud.rule=Host(`${NEXTCLOUD_DOMAIN:-ncrag.voronkov.club}`) && !PathPrefix(`/nodered`)"
+      - "traefik.http.routers.nextcloud.rule=Host(`${NEXTCLOUD_DOMAIN:-ncrag.voronkov.club}`) && !PathPrefix(`/nodered`) && !PathPrefix(`/rabbitmq`)"
       - "traefik.http.routers.nextcloud.entrypoints=websecure"
       - "traefik.http.routers.nextcloud.tls.certresolver=le"
       - "traefik.http.routers.nextcloud.priority=100"
@@ -98,6 +89,7 @@ services:
       - "traefik.http.services.nextcloud.loadbalancer.server.port=80"
     volumes:
       - nextcloud_data:/var/www/html
+      - ./webhook_rabbitmq:/var/www/html/custom_apps/webhook_rabbitmq:rw
     networks:
       - backend
 
@@ -119,28 +111,7 @@ services:
     networks:
       - backend
 
-  mock-parser:
-    build:
-      context: ./services/mock-parser
-    container_name: mock-parser
-    # internal only; exposed via backend network
-    environment:
-      - UVICORN_WORKERS=1
-    labels:
-      - "traefik.enable=true"
-      # Parser webhook endpoint
-      - "traefik.http.routers.parser-webhook.rule=Host(`${NEXTCLOUD_DOMAIN:-ncrag.voronkov.club}`) && PathPrefix(`/webhooks/parser`)"
-      - "traefik.http.routers.parser-webhook.entrypoints=websecure"
-      - "traefik.http.routers.parser-webhook.tls.certresolver=le"
-      - "traefik.http.routers.parser-webhook.priority=800"
-      # Strip /webhooks/parser prefix and route to /
-      - "traefik.http.routers.parser-webhook.middlewares=parser-strip"
-      - "traefik.http.middlewares.parser-strip.stripprefix.prefixes=/webhooks/parser"
-      - "traefik.http.services.parser.loadbalancer.server.port=8000"
-      - "traefik.docker.network=nc-rag_backend"
-    restart: unless-stopped
-    networks:
-      - backend
+  
 
   node-red:
     build:
@@ -176,7 +147,7 @@ services:
       - backend
 
   rabbitmq:
-    image: rabbitmq:3.13-management-alpine
+    image: rabbitmq:3-management
     container_name: nc-rabbitmq
     environment:
       RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER:-ncrag}
@@ -185,17 +156,29 @@ services:
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
       - ./scripts/rabbitmq-init.sh:/docker-entrypoint-initdb.d/init.sh:ro
+      - ./configs/rabbitmq/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf:ro
     labels:
       - "traefik.enable=true"
       # Management UI with basic auth protection
       - "traefik.http.routers.rabbitmq-mgmt.rule=Host(`${NEXTCLOUD_DOMAIN:-ncrag.voronkov.club}`) && PathPrefix(`/rabbitmq`)"
       - "traefik.http.routers.rabbitmq-mgmt.entrypoints=websecure"
       - "traefik.http.routers.rabbitmq-mgmt.tls.certresolver=le"
-      - "traefik.http.routers.rabbitmq-mgmt.middlewares=rabbitmq-auth,rabbitmq-strip"
-      # Basic auth middleware
-      - "traefik.http.middlewares.rabbitmq-auth.basicauth.users=${RABBITMQ_MGMT_AUTH:-admin:$$2y$$10$$rO7VlFuBXF.LQPDPfOn2LOntQgUQvNX2nHsIhOiwtwe9urLhf5vTa}"
-      # Strip /rabbitmq prefix
-      - "traefik.http.middlewares.rabbitmq-strip.stripprefix.prefixes=/rabbitmq"
+      - "traefik.http.routers.rabbitmq-mgmt.middlewares=rabbitmq-slash,rabbitmq-authhdr"
+      - "traefik.http.routers.rabbitmq-mgmt.priority=950"
+      # Ensure trailing slash so relative assets resolve under /rabbitmq/
+      - "traefik.http.middlewares.rabbitmq-slash.redirectregex.regex=^/rabbitmq$"
+      - "traefik.http.middlewares.rabbitmq-slash.redirectregex.replacement=/rabbitmq/"
+      - "traefik.http.middlewares.rabbitmq-slash.redirectregex.permanent=true"
+      # Extra router to catch exact /rabbitmq and only redirect
+      - "traefik.http.routers.rabbitmq-slash.rule=Host(`${NEXTCLOUD_DOMAIN:-ncrag.voronkov.club}`) && Path(`/rabbitmq`)"
+      - "traefik.http.routers.rabbitmq-slash.entrypoints=websecure"
+      - "traefik.http.routers.rabbitmq-slash.middlewares=rabbitmq-slash"
+      - "traefik.http.routers.rabbitmq-slash.service=noop@internal"
+      - "traefik.http.routers.rabbitmq-slash.tls.certresolver=le"
+      - "traefik.http.routers.rabbitmq-slash.priority=951"
+      # Inject Basic Authorization to upstream so UI/API don't prompt
+      - "traefik.http.middlewares.rabbitmq-authhdr.headers.customrequestheaders.Authorization=Basic ${RABBITMQ_UI_AUTH_B64:-bmNyYWc6bmNyYWdwYXNz}"
+      # Basic auth middleware removed (public UI via Traefik)
       - "traefik.http.services.rabbitmq.loadbalancer.server.port=15672"
       - "traefik.docker.network=nc-rag_backend"
     restart: unless-stopped
