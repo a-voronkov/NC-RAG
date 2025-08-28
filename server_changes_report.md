@@ -50,7 +50,7 @@ Untracked files:
 - **Memory setting removed**: removed `command: ["-m", "128"]`
 
 #### Nextcloud:
-- **Image version downgraded**: `nextcloud:31-apache` → `nextcloud:30-apache`
+- **Image version**: use `nextcloud:31-apache` (project standard)
 - **Traefik dependency removed** from `depends_on`
 - **Environment variables removed** - replaced with hardcoded values:
   - All `${POSTGRES_*}` variables
@@ -63,7 +63,7 @@ Untracked files:
   - Changed priority: `100` → `1`
 
 #### Nextcloud-cron:
-- **Image version downgraded**: `nextcloud:31-apache` → `nextcloud:30-apache`
+- **Image version**: use `nextcloud:31-apache` (project standard)
 - **Environment variables removed** - replaced with hardcoded values
 
 #### Node-RED:
@@ -148,7 +148,7 @@ A `.env` file was created on the server with real values:
 
 ### Changes Requiring Caution:
 
-1. **Image versions**: decide whether to use nextcloud:30 or 31
+1. **Image versions**: use Nextcloud 31 (`nextcloud:31-apache`)
 2. **Environment variables**: restore variable usage instead of hardcoded values
 3. **Traefik settings**: restore HSTS and other security headers
 4. **nc-webhook-seeder service**: decide if it's needed
