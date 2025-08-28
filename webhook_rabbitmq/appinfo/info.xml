@@ -13,7 +13,7 @@
   <bugs>https://example.com/issues</bugs>
   <dependencies>
     <php min-version="8.1"/>
-    <nextcloud min-version="30" max-version="30"/>
+    <nextcloud min-version="30" max-version="31"/>
   </dependencies>
   <settings>
     <admin>OCA\WebhookRabbitMQ\Settings\Admin</admin>
