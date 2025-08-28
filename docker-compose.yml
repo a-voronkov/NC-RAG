@@ -215,7 +215,7 @@ services:
     build: ./services/worker
     container_name: nc-worker
     environment:
-      - RABBITMQ_URL=amqp://ncrag-app:${RABBITMQ_APP_PASS}@rabbitmq:5672/ncrag
+      - RABBITMQ_URL=amqp://ncrag-app:${RABBITMQ_APP_PASS:-ncragapppass}@rabbitmq:5672/ncrag
       - RABBITMQ_QUEUE=events.files
       - NEXTCLOUD_URL=https://${NEXTCLOUD_DOMAIN:-ncrag.voronkov.club}
       - NEXTCLOUD_USER=${NEXTCLOUD_ADMIN_USER:-admin}
