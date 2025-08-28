@@ -5,6 +5,7 @@ import (
 	"encoding/base64"
 	"fmt"
 	"io"
+	"os"
 	"strings"
 
 	"nc-rag-worker/models"
@@ -88,7 +89,7 @@ func (c *Client) FetchFile(ctx context.Context, event *models.FileEvent) (string
 }
 
 // GetFileInfo retrieves file information from Nextcloud
-func (c *Client) GetFileInfo(ctx context.Context, filePath string) (*gowebdav.File, error) {
+func (c *Client) GetFileInfo(ctx context.Context, filePath string) (os.FileInfo, error) {
 	// Convert Nextcloud path to WebDAV path
 	webdavPath := filePath
 	userPrefix := "/" + c.username + "/"
@@ -102,7 +103,7 @@ func (c *Client) GetFileInfo(ctx context.Context, filePath string) (*gowebdav.Fi
 		return nil, fmt.Errorf("failed to get file info: %w", err)
 	}
 
-	return &info, nil
+	return info, nil
 }
 
 // Health checks the connection to Nextcloud

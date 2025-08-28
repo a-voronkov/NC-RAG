@@ -166,6 +166,8 @@ services:
       RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER:-ncrag}
       RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD:-ncragpass}
       RABBITMQ_DEFAULT_VHOST: ${RABBITMQ_VHOST:-ncrag}
+      RABBITMQ_APP_USER: ${RABBITMQ_APP_USER:-ncrag-app}
+      RABBITMQ_APP_PASS: ${RABBITMQ_APP_PASS:-ncragapppass}
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
       - ./scripts/rabbitmq-init.sh:/docker-entrypoint-initdb.d/init.sh:ro
