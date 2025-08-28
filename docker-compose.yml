@@ -57,7 +57,9 @@ services:
       - backend
 
   nextcloud:
-    image: nextcloud:31-apache
+    build:
+      context: ./
+      dockerfile: services/nextcloud/Dockerfile
     container_name: nextcloud
     depends_on:
       - db
@@ -78,6 +80,16 @@ services:
       REDIS_HOST_PORT: 6379
       MEMCACHED_HOST: memcached
       MEMCACHED_PORT: 11211
+      # Webhook RabbitMQ app env (read by hook and/or app)
+      NC_webhook_rabbitmq_enabled: ${NC_webhook_rabbitmq_enabled:-1}
+      NC_webhook_rabbitmq_host: ${NC_webhook_rabbitmq_host:-rabbitmq}
+      NC_webhook_rabbitmq_port: ${NC_webhook_rabbitmq_port:-5672}
+      NC_webhook_rabbitmq_user: ${NC_webhook_rabbitmq_user:-${RABBITMQ_USER:-ncrag}}
+      NC_webhook_rabbitmq_pass: ${NC_webhook_rabbitmq_pass:-${RABBITMQ_PASSWORD:-ncragpass}}
+      NC_webhook_rabbitmq_vhost: ${NC_webhook_rabbitmq_vhost:-${RABBITMQ_VHOST:-ncrag}}
+      NC_webhook_rabbitmq_exchange: ${NC_webhook_rabbitmq_exchange:-nextcloud.events}
+      NC_webhook_rabbitmq_exchange_type: ${NC_webhook_rabbitmq_exchange_type:-topic}
+      NC_webhook_rabbitmq_routing_prefix: ${NC_webhook_rabbitmq_routing_prefix:-nextcloud}
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.nextcloud.middlewares=hsts"
@@ -89,12 +101,13 @@ services:
       - "traefik.http.services.nextcloud.loadbalancer.server.port=80"
     volumes:
       - nextcloud_data:/var/www/html
-      - ./webhook_rabbitmq:/var/www/html/custom_apps/webhook_rabbitmq:rw
     networks:
       - backend
 
   nextcloud-cron:
-    image: nextcloud:31-apache
+    build:
+      context: ./
+      dockerfile: services/nextcloud/Dockerfile
     container_name: nextcloud-cron
     restart: unless-stopped
     depends_on:
