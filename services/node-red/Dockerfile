@@ -7,7 +7,7 @@ USER node-red
 
 COPY flows.json /usr/src/node-red/flows_template.json
 
-RUN echo '#!/bin/bash\n\
+RUN echo '#!/bin/sh\n\
 if [ ! -f /data/flows.json ]; then\n\
     cp /usr/src/node-red/flows_template.json /data/flows.json\n\
     chown node-red:node-red /data/flows.json\n\
