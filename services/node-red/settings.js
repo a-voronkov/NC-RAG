@@ -6,9 +6,10 @@
  */
 
 module.exports = {
-    // Base URL path for Node-RED when running behind reverse proxy
+    // Base URL paths for Node-RED when running behind reverse proxy
     // This must match the Traefik routing configuration
-    httpRoot: '/nodered',
+    httpAdminRoot: '/nodered',
+    httpNodeRoot: '/nodered',
     
     // UI settings for Node-RED dashboard
     ui: { 
@@ -33,6 +34,9 @@ module.exports = {
     
     // HTTPS configuration - disabled since we're behind Traefik proxy
     https: null,
+    
+    // Credential encryption key - change this in production!
+    credentialSecret: process.env.WEBHOOK_SECRET || "changeme-credential-secret",
     
     // Connection retry settings
     mqttReconnectTime: 15000,
