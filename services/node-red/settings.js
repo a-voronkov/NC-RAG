@@ -31,6 +31,9 @@ module.exports = {
     // Server configuration
     uiPort: process.env.PORT || 1880,
     
+    // HTTPS configuration - disabled since we're behind Traefik proxy
+    https: null,
+    
     // Connection retry settings
     mqttReconnectTime: 15000,
     serialReconnectTime: 15000,
@@ -77,10 +80,8 @@ module.exports = {
         }
     },
     
-    // Security settings
-    httpNodeAuth: {
-        // Authentication for HTTP nodes (if needed)
-    },
+    // Security settings - disabled for HTTP nodes
+    httpNodeAuth: null,
     
     // CORS settings for API access
     httpNodeCors: {
