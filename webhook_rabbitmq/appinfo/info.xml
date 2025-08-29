@@ -11,6 +11,10 @@
   <category>integration</category>
   <website>https://example.com</website>
   <bugs>https://example.com/issues</bugs>
+  <types>
+    <logging/>
+  </types>
+  <default_enable/>
   <dependencies>
     <php min-version="8.1"/>
     <nextcloud min-version="30" max-version="31"/>
