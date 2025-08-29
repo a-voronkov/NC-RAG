@@ -19,7 +19,7 @@ class SettingsController extends Controller {
 
     /** @AdminRequired */
     public function save(): DataResponse {
-        $allowed = ['enabled', 'host', 'port', 'user', 'pass', 'vhost', 'exchange', 'exchange_type', 'routing_prefix'];
+        $allowed = ['publish_enabled', 'host', 'port', 'user', 'pass', 'vhost', 'exchange', 'exchange_type', 'routing_prefix'];
         $key = (string)$this->request->getParam('key', '');
         $value = (string)$this->request->getParam('value', '');
         if ($key === '' || !in_array($key, $allowed, true)) {

@@ -14,7 +14,11 @@ class ConfigService {
     }
 
     public function isEnabled(): bool {
-        $value = $this->getString('enabled', null);
+        // Prefer new key; fall back to legacy 'enabled' if present
+        $value = $this->getString('publish_enabled', null);
+        if ($value === null) {
+            $value = $this->getString('enabled', null);
+        }
         if ($value === null) {
             return false;
         }
@@ -72,8 +76,14 @@ class ConfigService {
         if ($fromApp !== '__MISSING__') {
             return $fromApp;
         }
+        // Support both new and legacy env keys for enabled flag
         $envKey = 'NC_' . Application::APP_ID . '_' . $key;
         $fromEnv = \getenv($envKey);
+        if ($fromEnv === false || $fromEnv === null || $fromEnv === '') {
+            if ($key === 'publish_enabled') {
+                $fromEnv = \getenv('NC_' . Application::APP_ID . '_enabled');
+            }
+        }
         if ($fromEnv !== false && $fromEnv !== null && $fromEnv !== '') {
             return (string)$fromEnv;
         }

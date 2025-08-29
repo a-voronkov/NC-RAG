@@ -28,7 +28,7 @@
       const exchangeType = document.getElementById('wr-exchange-type').value;
       const routingPrefix = document.getElementById('wr-routing-prefix').value;
       const updates = [
-        ['enabled', enabled],
+        ['publish_enabled', enabled],
         ['host', host],
         ['port', port],
         ['user', user],

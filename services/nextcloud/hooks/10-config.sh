@@ -36,7 +36,12 @@ apply_cfg() {
   fi
 }
 
-apply_cfg enabled "${NC_webhook_rabbitmq_enabled:-}"
+# Use new key publish_enabled (legacy NC_webhook_rabbitmq_enabled still supported)
+if [ -n "${NC_webhook_rabbitmq_publish_enabled:-}" ]; then
+  apply_cfg publish_enabled "${NC_webhook_rabbitmq_publish_enabled}"
+elif [ -n "${NC_webhook_rabbitmq_enabled:-}" ]; then
+  apply_cfg publish_enabled "${NC_webhook_rabbitmq_enabled}"
+fi
 apply_cfg host "${NC_webhook_rabbitmq_host:-}"
 apply_cfg port "${NC_webhook_rabbitmq_port:-}"
 apply_cfg user "${NC_webhook_rabbitmq_user:-}"
