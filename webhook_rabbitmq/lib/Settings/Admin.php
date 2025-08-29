@@ -36,7 +36,7 @@ class Admin implements ISettings {
     }
 
     public function getSection(): string {
-        return 'additional';
+        return 'notifications';
     }
 
     public function getPriority(): int {

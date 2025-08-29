@@ -28,11 +28,11 @@ class ConfigService {
     }
 
     public function getUser(): string {
-        return $this->getString('user', 'guest') ?? 'guest';
+        return $this->getString('user', 'ncrag-app') ?? 'ncrag-app';
     }
 
     public function getPassword(): string {
-        return $this->getString('pass', 'guest') ?? 'guest';
+        return $this->getString('pass', 'ncrag-app') ?? 'ncrag-app';
     }
 
     public function getVHost(): string {
