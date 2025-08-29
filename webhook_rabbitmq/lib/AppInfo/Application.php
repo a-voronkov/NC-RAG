@@ -24,15 +24,28 @@ class Application extends App implements IBootstrap {
 
     public function boot(IBootContext $context): void {
         $serverContainer = $context->getServerContainer();
-        // Migrate legacy config key 'enabled' -> 'publish_enabled' once at boot
+        // Clean up and migrate legacy config key 'enabled' -> 'publish_enabled' once at boot
         try {
             /** @var \OCP\IConfig $cfg */
             $cfg = $serverContainer->get(\OCP\IConfig::class);
             $legacy = $cfg->getAppValue(self::APP_ID, 'enabled', '__MISSING__');
             $current = $cfg->getAppValue(self::APP_ID, 'publish_enabled', '__MISSING__');
-            if ($legacy !== '__MISSING__' && $current === '__MISSING__') {
-                $cfg->setAppValue(self::APP_ID, 'publish_enabled', $legacy);
-                // Do not delete legacy immediately to avoid surprises; keep for compatibility
+            
+            // If legacy exists and is problematic (like "1"), clean it up
+            if ($legacy !== '__MISSING__') {
+                // Check if legacy value is problematic (not proper JSON or just "1")
+                if ($legacy === '1' || $legacy === '0' || (!empty($legacy) && json_decode($legacy) === null && $legacy !== 'yes' && $legacy !== 'no')) {
+                    // Migrate simple values
+                    $migratedValue = ($legacy === '1' || $legacy === 'yes') ? '1' : '0';
+                    if ($current === '__MISSING__') {
+                        $cfg->setAppValue(self::APP_ID, 'publish_enabled', $migratedValue);
+                    }
+                    // Remove the problematic legacy key
+                    $cfg->deleteAppValue(self::APP_ID, 'enabled');
+                } elseif ($current === '__MISSING__') {
+                    // Normal migration for non-problematic values
+                    $cfg->setAppValue(self::APP_ID, 'publish_enabled', $legacy);
+                }
             }
         } catch (\Throwable $e) {
             // ignore migration errors silently

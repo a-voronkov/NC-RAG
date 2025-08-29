@@ -21,8 +21,12 @@ fi
 
 chown -R www-data:www-data "$APPS_DIR" || true
 
-# Enable the app if available
+# Clean up problematic app configuration before enabling
 if [ -x "$NC_DIR/occ" ]; then
+  echo "[hook] Cleaning up problematic app configuration"
+  # Remove the problematic 'enabled' key that can contain "1" instead of proper JSON
+  runuser -u www-data -- php "$NC_DIR/occ" config:app:delete "$APP_ID" enabled 2>/dev/null || true
+  
   echo "[hook] Enabling app $APP_ID (if not already)"
   runuser -u www-data -- php -d memory_limit=512M "$NC_DIR/occ" app:enable "$APP_ID" || true
 fi
