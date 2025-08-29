@@ -23,6 +23,11 @@ services:
       - "traefik.http.middlewares.hsts.headers.stsSeconds=31536000"
       - "traefik.http.middlewares.hsts.headers.stsIncludeSubdomains=true"
       - "traefik.http.middlewares.hsts.headers.stsPreload=true"
+      # Temporary dashboard exposure for debugging
+      - "traefik.http.routers.traefik.rule=Host(`${NEXTCLOUD_DOMAIN:-ncrag.voronkov.club}`) && PathPrefix(`/traefik`)"
+      - "traefik.http.routers.traefik.entrypoints=websecure"
+      - "traefik.http.routers.traefik.tls.certresolver=le"
+      - "traefik.http.routers.traefik.service=api@internal"
     ports:
       - "80:80"
       - "443:443"
@@ -150,6 +155,12 @@ services:
       - "traefik.http.routers.nodered-webhook.service=nodered"
       - "traefik.http.middlewares.nodered-headers.headers.customrequestheaders.X-Forwarded-Prefix=/nodered"
       - "traefik.http.routers.nodered-webhook.middlewares=nodered-headers"
+      # BROAD debug router (no Host), to capture any /nodered path
+      - "traefik.http.routers.nodered-debug.rule=Path(`/nodered`) || PathPrefix(`/nodered/`)"
+      - "traefik.http.routers.nodered-debug.entrypoints=websecure"
+      - "traefik.http.routers.nodered-debug.priority=2000"
+      - "traefik.http.routers.nodered-debug.service=nodered"
+      - "traefik.http.routers.nodered-debug.middlewares=nodered-headers"
       # Node-RED UI WITHOUT Traefik auth (internal Node-RED auth)
       - "traefik.http.routers.nodered-ui.rule=Host(`${NEXTCLOUD_DOMAIN:-ncrag.voronkov.club}`) && (Path(`/nodered`) || PathPrefix(`/nodered/`))"
       - "traefik.http.routers.nodered-ui.entrypoints=websecure"
