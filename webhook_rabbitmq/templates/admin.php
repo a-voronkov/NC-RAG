@@ -3,7 +3,7 @@
   <form id="webhook-rabbitmq-settings">
     <p>
       <label for="wr-enabled">Enabled</label>
-      <input type="checkbox" id="wr-enabled" <?= $enabled === '1' ? 'checked' : '' ?> />
+      <input type="checkbox" id="wr-enabled" <?= $publish_enabled === '1' ? 'checked' : '' ?> />
     </p>
     <p>
       <label for="wr-host">Host</label>

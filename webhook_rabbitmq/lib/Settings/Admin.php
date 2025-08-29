@@ -20,7 +20,7 @@ class Admin implements ISettings {
 
     public function getForm(): TemplateResponse {
         $params = [
-            'enabled' => $this->config->getAppValue(Application::APP_ID, 'enabled', '0'),
+            'publish_enabled' => $this->config->getAppValue(Application::APP_ID, 'publish_enabled', $this->config->getAppValue(Application::APP_ID, 'enabled', '0')),
             'host' => $this->config->getAppValue(Application::APP_ID, 'host', '127.0.0.1'),
             'port' => $this->config->getAppValue(Application::APP_ID, 'port', '5672'),
             'user' => $this->config->getAppValue(Application::APP_ID, 'user', 'guest'),

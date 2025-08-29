@@ -81,7 +81,7 @@ services:
       MEMCACHED_HOST: memcached
       MEMCACHED_PORT: 11211
       # Webhook RabbitMQ app env (read by hook and/or app)
-      NC_webhook_rabbitmq_enabled: ${NC_webhook_rabbitmq_enabled:-1}
+      NC_webhook_rabbitmq_publish_enabled: ${NC_webhook_rabbitmq_publish_enabled:-${NC_webhook_rabbitmq_enabled:-1}}
       NC_webhook_rabbitmq_host: ${NC_webhook_rabbitmq_host:-rabbitmq}
       NC_webhook_rabbitmq_port: ${NC_webhook_rabbitmq_port:-5672}
       NC_webhook_rabbitmq_user: ${NC_webhook_rabbitmq_user:-${RABBITMQ_USER:-ncrag}}
