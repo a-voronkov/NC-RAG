@@ -254,24 +254,6 @@ services:
     networks:
       - backend
 
-  nc-webhook-seeder:
-    image: curlimages/curl:8.10.1
-    container_name: nc-webhook-seeder
-    depends_on:
-      - nextcloud
-      - traefik
-    environment:
-      - NC_ADMIN_USER=${NEXTCLOUD_ADMIN_USER}
-      - NC_ADMIN_PASS=${NEXTCLOUD_ADMIN_PASSWORD}
-      - NC_DOMAIN=${NEXTCLOUD_DOMAIN}
-      - WEBHOOK_SECRET=${WEBHOOK_SECRET}
-    entrypoint: ["/bin/sh", "/scripts/register_webhooks.sh"]
-    volumes:
-      - ./scripts/register_webhooks.sh:/scripts/register_webhooks.sh:ro
-    restart: "no"
-    networks:
-      - backend
-
 volumes:
   nextcloud_data:
   db_data:
