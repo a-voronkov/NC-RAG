@@ -8,8 +8,8 @@
 module.exports = {
     // Base URL paths for Node-RED when running behind reverse proxy
     // This must match the Traefik routing configuration
-    httpAdminRoot: '/nodered',
-    httpNodeRoot: '/nodered',
+    httpAdminRoot: '/nodered/',
+    httpNodeRoot: '/nodered/',
     
     // UI settings for Node-RED dashboard
     ui: { 

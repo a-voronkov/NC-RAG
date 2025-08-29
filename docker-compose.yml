@@ -147,11 +147,16 @@ services:
       - "traefik.http.routers.nodered-webhook.entrypoints=websecure"
       - "traefik.http.routers.nodered-webhook.priority=1000"
       - "traefik.http.routers.nodered-webhook.tls.certresolver=le"
+      - "traefik.http.routers.nodered-webhook.service=nodered"
+      - "traefik.http.middlewares.nodered-headers.headers.customrequestheaders.X-Forwarded-Prefix=/nodered"
+      - "traefik.http.routers.nodered-webhook.middlewares=nodered-headers"
       # Node-RED UI WITHOUT Traefik auth (internal Node-RED auth)
-      - "traefik.http.routers.nodered-ui.rule=Host(`${NEXTCLOUD_DOMAIN:-ncrag.voronkov.club}`) && PathPrefix(`/nodered`)"
+      - "traefik.http.routers.nodered-ui.rule=Host(`${NEXTCLOUD_DOMAIN:-ncrag.voronkov.club}`) && (Path(`/nodered`) || PathPrefix(`/nodered/`))"
       - "traefik.http.routers.nodered-ui.entrypoints=websecure"
       - "traefik.http.routers.nodered-ui.priority=900"
       - "traefik.http.routers.nodered-ui.tls.certresolver=le"
+      - "traefik.http.routers.nodered-ui.service=nodered"
+      - "traefik.http.routers.nodered-ui.middlewares=nodered-headers"
       # Single service for both routers
       - "traefik.http.services.nodered.loadbalancer.server.port=1880"
       - "traefik.docker.network=nc-rag_backend"
