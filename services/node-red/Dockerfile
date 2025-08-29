@@ -7,6 +7,7 @@ USER node-red
 
 COPY flows.json /usr/src/node-red/flows_template.json
 
+USER root
 RUN echo '#!/bin/sh\n\
 if [ ! -f /data/flows.json ]; then\n\
     cp /usr/src/node-red/flows_template.json /data/flows.json\n\
@@ -15,4 +16,5 @@ fi\n\
 exec /usr/src/node-red/docker-entrypoint.sh "$@"' > /usr/src/node-red/init-entrypoint.sh \
     && chmod +x /usr/src/node-red/init-entrypoint.sh
 
+USER node-red
 ENTRYPOINT ["/usr/src/node-red/init-entrypoint.sh"]
