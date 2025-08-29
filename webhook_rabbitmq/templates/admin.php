@@ -1,10 +1,7 @@
 <div class="section">
   <h2>Webhook RabbitMQ</h2>
+  <p><em>Plugin is active. Configure RabbitMQ connection settings below:</em></p>
   <form id="webhook-rabbitmq-settings">
-    <p>
-      <label for="wr-enabled">Enabled</label>
-      <input type="checkbox" id="wr-enabled" <?= $publish_enabled === '1' ? 'checked' : '' ?> />
-    </p>
     <p>
       <label for="wr-host">Host</label>
       <input type="text" id="wr-host" value="<?= p($host) ?>" />

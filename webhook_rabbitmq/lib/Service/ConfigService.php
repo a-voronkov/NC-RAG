@@ -14,15 +14,9 @@ class ConfigService {
     }
 
     public function isEnabled(): bool {
-        // Prefer new key; fall back to legacy 'enabled' if present
-        $value = $this->getString('publish_enabled', null);
-        if ($value === null) {
-            $value = $this->getString('enabled', null);
-        }
-        if ($value === null) {
-            return false;
-        }
-        return $this->toBool($value);
+        // If the app is loaded and running, it means it's enabled in Nextcloud
+        // No need for additional enabled/disabled logic
+        return true;
     }
 
     public function getHost(): string {
@@ -76,14 +70,9 @@ class ConfigService {
         if ($fromApp !== '__MISSING__') {
             return $fromApp;
         }
-        // Support both new and legacy env keys for enabled flag
+        // Check environment variable
         $envKey = 'NC_' . Application::APP_ID . '_' . $key;
         $fromEnv = \getenv($envKey);
-        if ($fromEnv === false || $fromEnv === null || $fromEnv === '') {
-            if ($key === 'publish_enabled') {
-                $fromEnv = \getenv('NC_' . Application::APP_ID . '_enabled');
-            }
-        }
         if ($fromEnv !== false && $fromEnv !== null && $fromEnv !== '') {
             return (string)$fromEnv;
         }

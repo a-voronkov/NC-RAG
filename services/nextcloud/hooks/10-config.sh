@@ -40,12 +40,7 @@ apply_cfg() {
   fi
 }
 
-# Use new key publish_enabled (legacy NC_webhook_rabbitmq_enabled still supported)
-if [ -n "${NC_webhook_rabbitmq_publish_enabled:-}" ]; then
-  apply_cfg publish_enabled "${NC_webhook_rabbitmq_publish_enabled}"
-elif [ -n "${NC_webhook_rabbitmq_enabled:-}" ]; then
-  apply_cfg publish_enabled "${NC_webhook_rabbitmq_enabled}"
-fi
+# No need for enabled/publish_enabled - if app is enabled in Nextcloud, it works
 apply_cfg host "${NC_webhook_rabbitmq_host:-}"
 apply_cfg port "${NC_webhook_rabbitmq_port:-}"
 apply_cfg user "${NC_webhook_rabbitmq_user:-}"
