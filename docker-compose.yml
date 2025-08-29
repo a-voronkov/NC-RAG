@@ -194,7 +194,7 @@ services:
       - "traefik.http.routers.rabbitmq-mgmt.rule=Host(`${NEXTCLOUD_DOMAIN:-ncrag.voronkov.club}`) && PathPrefix(`/rabbitmq`)"
       - "traefik.http.routers.rabbitmq-mgmt.entrypoints=websecure"
       - "traefik.http.routers.rabbitmq-mgmt.tls.certresolver=le"
-      - "traefik.http.routers.rabbitmq-mgmt.middlewares=rabbitmq-slash,rabbitmq-authhdr"
+      - "traefik.http.routers.rabbitmq-mgmt.middlewares=rabbitmq-slash"
       - "traefik.http.routers.rabbitmq-mgmt.priority=950"
       # Ensure trailing slash so relative assets resolve under /rabbitmq/
       - "traefik.http.middlewares.rabbitmq-slash.redirectregex.regex=^/rabbitmq$"
@@ -207,8 +207,7 @@ services:
       - "traefik.http.routers.rabbitmq-slash.service=noop@internal"
       - "traefik.http.routers.rabbitmq-slash.tls.certresolver=le"
       - "traefik.http.routers.rabbitmq-slash.priority=951"
-      # Inject Basic Authorization to upstream so UI/API don't prompt
-      - "traefik.http.middlewares.rabbitmq-authhdr.headers.customrequestheaders.Authorization=Basic ${RABBITMQ_UI_AUTH_B64:-bmNyYWc6bmNyYWdwYXNz}"
+      # RabbitMQ Management UI will handle authentication directly
       # Basic auth middleware removed (public UI via Traefik)
       - "traefik.http.services.rabbitmq.loadbalancer.server.port=15672"
       - "traefik.docker.network=nc-rag_backend"
