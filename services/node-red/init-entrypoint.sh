@@ -6,5 +6,5 @@ if [ ! -f /data/flows.json ]; then
     chown node-red:node-red /data/flows.json || true
 fi
 
-exec /usr/src/node-red/entrypoint.sh "$@"
+exec /usr/src/node-red/docker-entrypoint.sh "$@"
 
