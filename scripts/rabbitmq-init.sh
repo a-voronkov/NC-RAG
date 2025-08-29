@@ -10,13 +10,20 @@ echo "🐰 Starting RabbitMQ initialization..."
 echo "⏳ Waiting for RabbitMQ to start..."
 rabbitmqctl wait --timeout 60 /var/lib/rabbitmq/mnesia/rabbit@$HOSTNAME.pid
 
+# Ensure default vhost exists before setting permissions
+VHOST="${RABBITMQ_DEFAULT_VHOST:-ncrag}"
+if ! rabbitmqctl list_vhosts | awk 'NR>1{print $1}' | grep -Fx "$VHOST" >/dev/null; then
+  echo "➕ Adding vhost $VHOST"
+  rabbitmqctl add_vhost "$VHOST"
+fi
+
 # Create application user if not exists
 echo "👤 Creating application user..."
 rabbitmqctl add_user ${RABBITMQ_APP_USER:-ncrag-app} ${RABBITMQ_APP_PASS:-ncragapppass} 2>/dev/null || true
 
 # Set permissions for application user
 echo "🔐 Setting permissions..."
-rabbitmqctl set_permissions -p ${RABBITMQ_DEFAULT_VHOST:-ncrag} ${RABBITMQ_APP_USER:-ncrag-app} ".*" ".*" ".*"
+rabbitmqctl set_permissions -p "$VHOST" ${RABBITMQ_APP_USER:-ncrag-app} ".*" ".*" ".*"
 
 # Declare exchanges
 echo "📡 Creating exchanges..."
